@@ -98,12 +98,12 @@ export default function TransactionsPage() {
             key={t.id}
             rightActions={
               <div className="flex gap-2">
-                <Link href={`/transactions/${t.id}/edit`} className="bg-blue-600 text-white px-3 py-2 rounded self-center">Edit</Link>
+                <Link href={`/transactions/edit?id=${encodeURIComponent(t.id)}`} className="bg-blue-600 text-white px-3 py-2 rounded self-center">Edit</Link>
                 <button onClick={()=> del.mutate(t.id)} className="bg-red-600 text-white px-3 py-2 rounded self-center">Delete</button>
               </div>
             }
           >
-            <Link href={`/transactions/${t.id}/edit`} className="block p-3">
+            <Link href={`/transactions/edit?id=${encodeURIComponent(t.id)}`} className="block p-3">
               <div className="flex justify-between text-sm">
                 <div className="font-medium">{t.txn_type} • {t.category_id || t.person_id || t.party || "—"}</div>
                 <div>{formatPaiseINR(t.amount_paise)}</div>
@@ -148,7 +148,7 @@ export default function TransactionsPage() {
                 <td className="p-2">{String(t.posting)}</td>
                 <td className="p-2 text-right">
                   <div className="flex gap-2 justify-end">
-                    <Link href={`/transactions/${t.id}/edit`} className="text-blue-600 hover:underline">Edit</Link>
+                    <Link href={`/transactions/edit?id=${encodeURIComponent(t.id)}`} className="text-blue-600 hover:underline">Edit</Link>
                     <button onClick={()=> del.mutate(t.id)} className="text-red-600 hover:underline">Delete</button>
                   </div>
                 </td>

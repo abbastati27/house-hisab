@@ -1,23 +1,32 @@
 "use client";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { parseIndianToPaise, formatPaiseINR } from "@/lib/money";
+import { useSearchParams, useRouter } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
+import { parseIndianToPaise } from "@/lib/money";
 
 async function fetchJSON<T>(url: string): Promise<T> {
-  const res = await fetch(process.env.NEXT_PUBLIC_API_URL + url, { cache: "no-store" });
+  const base = process.env.NEXT_PUBLIC_API_URL || "";
+  const res = await fetch(base + url, { cache: "no-store" });
   if (!res.ok) throw new Error("Failed");
   return res.json();
 }
 
 export default function EditTxnPage(){
-  const params = useParams();
-  const id = params?.id as string;
+  return (
+    <Suspense fallback={<div className="p-4">Loading…</div>}>
+      <EditTxnInner />
+    </Suspense>
+  );
+}
+
+function EditTxnInner(){
+  const search = useSearchParams();
+  const id = search?.get("id") || "";
   const router = useRouter();
   const qc = useQueryClient();
 
-  const { data: txn } = useQuery({ queryKey: ["txn", id], queryFn: ()=> fetchJSON<any>(`/api/v1/transactions/${id}`)});
+  const { data: txn } = useQuery({ enabled: !!id, queryKey: ["txn", id], queryFn: ()=> fetchJSON<any>(`/api/v1/transactions/${id}`)});
 
   const [txnType, setTxnType] = useState("");
   const [amount, setAmount] = useState("");
@@ -58,7 +67,8 @@ export default function EditTxnPage(){
         party: party || null,
         notes: notes || null,
       };
-      const res = await fetch(process.env.NEXT_PUBLIC_API_URL + `/api/v1/transactions/${id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload)});
+      const base = process.env.NEXT_PUBLIC_API_URL || "";
+      const res = await fetch(base + `/api/v1/transactions/${id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload)});
       if (!res.ok) throw new Error(await res.text());
       return res.json();
     },
@@ -69,6 +79,7 @@ export default function EditTxnPage(){
     }
   });
 
+  if (!id) return <div className="p-4">Missing id</div>;
   if (!txn) return <div className="p-4">Loading…</div>;
 
   return (

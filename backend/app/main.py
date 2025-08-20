@@ -4,6 +4,9 @@ import os
 import socket
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+from pathlib import Path
 
 from .db import Base, engine, create_triggers_if_missing, SessionLocal
 from .models import FundBalance
@@ -49,11 +52,18 @@ def on_startup():
     print(f"Open on your LAN: http://{ip}:{port}")
 
 
+# API routers
 app.include_router(funds.router)
 app.include_router(transactions.router)
 app.include_router(people.router)
 app.include_router(categories.router)
 app.include_router(reports.router)
+
+
+# Serve exported frontend
+FRONTEND_EXPORT_DIR = Path(__file__).resolve().parents[2] / "frontend" / "out"
+if FRONTEND_EXPORT_DIR.exists():
+    app.mount("/", StaticFiles(directory=str(FRONTEND_EXPORT_DIR), html=True), name="frontend")
 
 
 @app.get("/api/v1/health")
