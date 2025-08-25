@@ -69,3 +69,9 @@ if FRONTEND_EXPORT_DIR.exists():
 @app.get("/api/v1/health")
 def health():
     return {"ok": True}
+
+
+
+@app.get("/")
+def root():
+    return {"message": "Backend is running!"}
