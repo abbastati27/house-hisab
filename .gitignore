@@ -36,10 +36,6 @@ yarn-error.log*
 build/
 dist/
 
-# Env files (keep local untracked)
-.env
-.env.*
-!.env.example
 
 # Keep SQLite database files tracked (do NOT ignore)
 # (Intentionally no *.db ignore rule)

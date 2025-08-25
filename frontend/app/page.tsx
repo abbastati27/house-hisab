@@ -82,3 +82,4 @@ function Card(props: { title: string; value?: string; children?: React.ReactNode
     </div>
   );
 }
+console.log("NEXT_PUBLIC_API_URL:", process.env.NEXT_PUBLIC_API_URL);
